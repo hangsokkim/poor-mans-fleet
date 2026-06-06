@@ -1,0 +1,27 @@
+# runtime state
+fleet/queue/pending/*
+fleet/queue/running/*
+fleet/queue/done/*
+fleet/queue/failed/*
+fleet/queue/dlq/*
+fleet/outbox/*
+fleet/logs/*
+fleet/state/*
+!fleet/queue/pending/.gitkeep
+!fleet/queue/running/.gitkeep
+!fleet/queue/done/.gitkeep
+!fleet/queue/failed/.gitkeep
+!fleet/queue/dlq/.gitkeep
+!fleet/outbox/.gitkeep
+!fleet/logs/.gitkeep
+!fleet/state/.gitkeep
+
+# secrets / config
+.env
+*.key
+*.pem
+authorized_keys
+
+# python
+__pycache__/
+*.pyc
