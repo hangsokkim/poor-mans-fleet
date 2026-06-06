@@ -1,0 +1,11 @@
+[Unit]
+Description=poor man's fleet cross-watchdog (every 5 min)
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=5min
+Persistent=true
+Unit=cross-watchdog.service
+
+[Install]
+WantedBy=timers.target

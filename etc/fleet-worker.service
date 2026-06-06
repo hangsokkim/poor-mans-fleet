@@ -1,0 +1,17 @@
+[Unit]
+Description=poor man's fleet worker
+After=network-online.target
+
+[Service]
+Type=simple
+Environment=HOME=%h
+Environment=FLEET_HOME=%h/fleet
+ExecStart=/usr/bin/python3 %h/fleet/bin/worker.py
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+StandardOutput=append:%h/fleet/logs/worker.log
+StandardError=append:%h/fleet/logs/worker.log
+
+[Install]
+WantedBy=default.target

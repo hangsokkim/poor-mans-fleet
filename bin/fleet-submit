@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# fleet-submit <target> <kind> [payload-json]
+set -u
+TARGET="${1:?target required (pm|worker-a|worker-b)}"
+KIND="${2:?kind required}"
+PAYLOAD="${3:-{\}}"
+JOB_ID="$(date +%Y%m%d-%H%M%S)-$$"
+TMP=$(mktemp)
+cat > "$TMP" <<EOF
+{"id":"$JOB_ID","ts":"$(date -Iseconds)","from":"pm","to":"$TARGET","kind":"$KIND","priority":5,"payload":$PAYLOAD,"timeout_s":120}
+EOF
+scp -q "$TMP" "$TARGET":.openclaw/workspace/fleet/queue/pending/ 2>/dev/null || \
+scp -q "$TMP" "$TARGET":fleet/queue/pending/
+rm -f "$TMP"
+echo "$JOB_ID"

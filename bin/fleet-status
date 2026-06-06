@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# 1-line dashboard of all hosts
+FLEET="${FLEET_HOME:-$HOME/.openclaw/workspace/fleet}"
+echo "═══ PM (this) ═══"
+echo "  fleet: $(ls $FLEET/queue/pending 2>/dev/null | wc -l) pending / $(ls $FLEET/queue/running 2>/dev/null | wc -l) running / $(ls $FLEET/queue/done 2>/dev/null | wc -l) done / $(ls $FLEET/queue/failed 2>/dev/null | wc -l) failed"
+echo "  alerts: $([ -f $FLEET/inbox/pending-alerts.jsonl ] && wc -l < $FLEET/inbox/pending-alerts.jsonl || echo 0)"
+echo ""
+for h in worker-a worker-b; do
+  if ssh -o ConnectTimeout=2 -o BatchMode=yes $h 'echo ok' >/dev/null 2>&1; then
+    REMOTE=$(ssh -o ConnectTimeout=3 -o BatchMode=yes $h bash -s <<'REMOTE'
+W=$(systemctl --user is-active fleet-worker.service 2>/dev/null)
+GW=$(systemctl --user is-active openclaw-gateway.service 2>/dev/null)
+echo "  worker=$W gateway=$GW"
+REMOTE
+)
+    echo "═══ $h ═══"
+    echo "$REMOTE"
+  else
+    echo "═══ $h: UNREACHABLE ═══"
+  fi
+done

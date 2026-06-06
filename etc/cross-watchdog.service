@@ -1,0 +1,9 @@
+[Unit]
+Description=poor man's fleet cross-watchdog
+After=fleet-worker.service
+
+[Service]
+Type=oneshot
+Environment=HOME=%h
+Environment=FLEET_HOME=%h/fleet
+ExecStart=/usr/bin/python3 %h/fleet/bin/cross-watchdog.py

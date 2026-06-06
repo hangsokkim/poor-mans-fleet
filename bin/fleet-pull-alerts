@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# PM: pull alerts from all peers
+set -u
+MAIN_INBOX="${FLEET_HOME:-$HOME/.openclaw/workspace/fleet}/inbox/pending-alerts.jsonl"
+mkdir -p "$(dirname "$MAIN_INBOX")"
+touch "$MAIN_INBOX"
+PULLED=0
+for host in worker-a worker-b; do
+  if out=$(ssh -o ConnectTimeout=3 -o BatchMode=yes "$host" "
+    INBOX=~/fleet/inbox/pending-alerts.jsonl
+    [ -s \"\$INBOX\" ] && cat \"\$INBOX\" && : > \"\$INBOX\"
+  " 2>/dev/null); then
+    [ -n "$out" ] && echo "$out" >> "$MAIN_INBOX" && PULLED=$((PULLED + $(echo "$out" | wc -l)))
+  fi
+done
+[ "$PULLED" -gt 0 ] && echo "✓ pulled $PULLED alerts" && tail -n "$PULLED" "$MAIN_INBOX" || echo "(no new alerts)"
